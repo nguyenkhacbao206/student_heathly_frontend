@@ -8,6 +8,8 @@ import { LoginPage } from '@/pages/auth/LoginPage'
 import { RegisterPage } from '@/pages/auth/RegisterPage'
 import { HealthFormPage } from '@/pages/health/HealthFormPage'
 import { HealthListPage } from '@/pages/health/HealthListPage'
+import { MeasurementPeriodPage } from '@/pages/measurement/MeasurementPeriodPage'
+import { SchoolYearPage } from '@/pages/school-year/SchoolYearPage'
 import { StaffPage } from '@/pages/staff/StaffPage'
 import { StudentFormPage } from '@/pages/students/StudentFormPage'
 import { StudentListPage } from '@/pages/students/StudentListPage'
@@ -59,7 +61,13 @@ export function AppRoutes() {
             }
           />
 
-          {/* Đợt đo & Năm học */}
+          {/* Năm học */}
+          <Route path="school-years" element={<SchoolYearPage />} />
+
+          {/* Đợt đo */}
+          <Route path="measurement-periods" element={<MeasurementPeriodPage />} />
+
+          {/* Hồ sơ sức khoẻ */}
           <Route path="campaigns">
             <Route index element={<HealthListPage />} />
             <Route path="new" element={<HealthFormPage />} />

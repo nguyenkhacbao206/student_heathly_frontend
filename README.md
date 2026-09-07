@@ -30,11 +30,16 @@ Giao diện quản trị hệ thống theo dõi sức khoẻ học sinh, nối v
 
 ## Tính năng
 
-- **Khung quản trị**: sidebar 6 mục thu gọn được, topbar (thông báo, menu người dùng).
+- **Khung quản trị**: sidebar 6 mục thu gọn được (mục "Đợt đo & Năm học" có menu con), topbar
+  (thông báo, menu người dùng).
 - **Nhân sự (giáo viên)**: danh sách + thẻ thống kê, tìm kiếm, phân trang, thêm/sửa qua modal,
   khoá/mở khoá tài khoản.
 - **Lớp & Học sinh**: danh sách, tạo/sửa/xoá học sinh.
-- **Đợt đo & Năm học**: danh sách hồ sơ sức khoẻ, thêm hồ sơ, tự tính BMI.
+- **Năm học**: danh sách + thống kê, tìm kiếm, phân trang, thêm/sửa qua modal, đặt năm đang áp
+  dụng (chỉ một năm tại một thời điểm), xoá.
+- **Đợt đo**: danh sách + thống kê, lọc theo năm học và trạng thái, thêm/sửa qua modal, đổi
+  trạng thái ngay trên bảng (Sắp diễn ra / Đang mở / Đã đóng), xoá.
+- **Hồ sơ sức khoẻ**: danh sách hồ sơ, thêm hồ sơ, tự tính BMI.
 - **Tổng quan**: số liệu nhanh + hồ sơ sức khoẻ gần đây.
 - **Nền tảng dùng chung**: axios interceptor tự gắn token và tự refresh khi 401, chuẩn hoá lỗi
   về một class `ApiError`, cache/invalidate bằng TanStack Query.
@@ -150,7 +155,10 @@ src/
 | Giám sát phụ huynh | `/parents`   | `PlaceholderPage` (chưa có API)        |
 | Lớp & Học sinh     | `/students`  | `StudentListPage` + form tạo/sửa       |
 | Báo cáo thống kê   | `/reports`   | `PlaceholderPage` (chưa có API)        |
-| Đợt đo & Năm học   | `/campaigns` | `HealthListPage` + form tạo            |
+| Đợt đo & Năm học   | — (nhóm)     | Mục nhóm, bấm để mở 3 mục con bên dưới |
+| ↳ Năm học          | `/school-years` | `SchoolYearPage` + modal tạo/sửa    |
+| ↳ Đợt đo           | `/measurement-periods` | `MeasurementPeriodPage` + modal tạo/sửa |
+| ↳ Hồ sơ sức khoẻ   | `/campaigns` | `HealthListPage` + form tạo            |
 
 Route công khai: `/login`, `/register`. Mọi route còn lại nằm trong `RequireAuth` + `AppLayout`.
 Menu sidebar khai báo một chỗ duy nhất ở
@@ -159,8 +167,9 @@ Menu sidebar khai báo một chỗ duy nhất ở
 ## Giao diện & design system
 
 Toàn bộ style nằm trong một file [`src/index.css`](src/index.css): biến màu ở `:root`
-(`--color-primary` đỏ EDU HEALTH `#c8102e`, `--color-navy` `#16325c`, nền `#f1f3f7`) và class
-thuần kiểu BEM rút gọn. Không dùng Tailwind hay UI framework, không có thư viện icon — icon là
+(`--color-primary` navy `#16295e`, nền nhạt `--color-primary-soft` `#eef1fa`, nền trang
+`#f1f3f7`) và class thuần kiểu BEM rút gọn. Đỏ `#c8102e` giờ chỉ còn là `--color-danger`
+(dấu `*` bắt buộc, nút xoá, thông báo lỗi). Đổi tông màu cả app = sửa mấy biến này. Không dùng Tailwind hay UI framework, không có thư viện icon — icon là
 SVG inline trong [`src/components/ui/Icon.tsx`](src/components/ui/Icon.tsx).
 
 Khung màn hình: `AppLayout` = `Sidebar` + `Topbar` + `<Outlet />`.
@@ -195,6 +204,28 @@ response.
 | `studentService.remove`   | `DELETE /student/:id`    |
 | `healthService.list`      | `GET /health`            |
 | `healthService.create`    | `POST /health`           |
+| `schoolYearService.list`     | `GET /v1/year`                |
+| `schoolYearService.getById`  | `GET /v1/year/:id`            |
+| `schoolYearService.create`   | `POST /v1/year`               |
+| `schoolYearService.update`   | `PUT /v1/year/:id`            |
+| `schoolYearService.activate` | `PUT /v1/year/:id/isAvtive`   |
+| `schoolYearService.remove`   | `DELETE /v1/year/:id`         |
+| `measurementPeriodService.list`         | `GET /v1/measurement-periods`            |
+| `measurementPeriodService.getById`      | `GET /v1/measurement-periods/:id`        |
+| `measurementPeriodService.create`       | `POST /v1/measurement-periods`           |
+| `measurementPeriodService.update`       | `PATCH /v1/measurement-periods/:id`      |
+| `measurementPeriodService.updateStatus` | `PATCH /v1/measurement-periods/:id/status` |
+| `measurementPeriodService.remove`       | `DELETE /v1/measurement-periods/:id`     |
+
+### Việc backend cần sửa để FE chạy đủ
+
+| Vấn đề | Ảnh hưởng |
+| ------ | --------- |
+| `MeasurementPeriodModule` chưa nằm trong `imports` của `app.module.ts`, và class trong `measurement-period.module.ts` đang đặt trùng tên `SchoolYearModule` | Mọi endpoint `/v1/measurement-periods` trả **404** |
+| `year.dto.ts` đặt tên trường là `enDate` (thiếu chữ "d") | FE đang gửi kèm cả `enDate` và `endDate` để chạy được ở cả hai trường hợp |
+| Route `PUT /v1/year/:id/isAvtive` viết sai chính tả | FE gọi đúng theo tên sai hiện tại; sửa backend thì sửa cả `school-year.service.ts` |
+| `schoolYear.delete(id)` và `measurementPeriod.delete(id)` thiếu `{ where: { id } }` | Nút **Xoá** sẽ báo lỗi cho tới khi backend sửa |
+| `teacher.controller.ts` khai báo hai handler cùng `@Put(':id')` | Không đổi được `status` của giáo viên |
 
 Backend trả về hai dạng — bọc `ApiResponse` (`{ status, code, data, ... }`) hoặc object Prisma
 thô — nên [`lib/unwrap.ts`](src/lib/unwrap.ts) tự nhận diện và bóc `data`.
@@ -267,6 +298,8 @@ Khi FE và BE khác domain, dev proxy không còn tác dụng:
 - [ ] Nối API cho **Giám sát phụ huynh** và **Báo cáo thống kê** (đang là `PlaceholderPage`).
 - [ ] Thêm cột `role` cho giáo viên ở backend — cột "Vai trò" đang mặc định hiển thị `User`.
 - [ ] Chuyển tìm kiếm/phân trang sang server khi API hỗ trợ `?page=&limit=&q=`.
-- [ ] Quản lý năm học & đợt đo — backend đã có `SchoolYearModule` nhưng **chưa đăng ký trong
-      `app.module.ts`**, cần bật lên rồi FE mới nối được.
+- [x] Quản lý **Năm học** & **Đợt đo** — FE đã nối xong; backend còn phải đăng ký
+      `MeasurementPeriodModule` trong `app.module.ts` (xem bảng ở mục Kết nối API).
+- [ ] Gắn hồ sơ sức khoẻ vào đợt đo (`HealthRecord` hiện chỉ có `month`/`year`, chưa có
+      `measurementPeriodId`).
 - [ ] Tắt `VITE_AUTH_DISABLED` và hoàn thiện phân quyền theo vai trò.

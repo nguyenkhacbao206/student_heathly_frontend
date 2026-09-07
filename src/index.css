@@ -3,11 +3,13 @@
    Một file CSS duy nhất, class thuần (BEM rút gọn), không dùng CSS framework.
    ========================================================================== */
 :root {
-  /* brand */
-  --color-primary: #c8102e;
-  --color-primary-dark: #a30c24;
-  --color-primary-soft: #fdecee;
-  --color-navy: #16325c;
+  /* brand — navy là màu chủ đạo; đỏ chỉ còn dùng cho trạng thái nguy hiểm/bắt buộc */
+  --color-primary: #16295e;
+  --color-primary-dark: #0f1d43;
+  --color-primary-soft: #eef1fa;
+  --color-primary-softer: #f3f5fc;
+  --color-primary-ring: rgb(22 41 94 / 12%);
+  --color-navy: #16295e;
 
   /* surface */
   --color-bg: #f1f3f7;
@@ -170,8 +172,71 @@ a:hover {
   flex-shrink: 0;
 }
 
+/* Mục nhóm ("Đợt đo & Năm học") — là <button>, cần reset lại kiểu mặc định. */
+.sidebar__group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar__group > .sidebar__link {
+  width: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar__link--parent {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.sidebar__caret {
+  margin-left: auto;
+  color: var(--color-faint);
+  transition: transform 0.18s ease;
+}
+
+.sidebar__caret--open {
+  transform: rotate(180deg);
+}
+
+/* Danh sách con: thụt vào, có vạch dọc chạy dọc nhóm. */
+.sidebar__sub {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 2px 0 4px 22px;
+  padding-left: 12px;
+  border-left: 1px solid var(--color-border);
+}
+
+.sidebar__sublink {
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.sidebar__sublink:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.sidebar__sublink--active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
 .app-shell--collapsed .sidebar__wordmark,
-.app-shell--collapsed .sidebar__link span {
+.app-shell--collapsed .sidebar__link span,
+.app-shell--collapsed .sidebar__caret,
+.app-shell--collapsed .sidebar__sub {
   display: none;
 }
 
@@ -411,7 +476,7 @@ a:hover {
 .search__input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgb(200 16 46 / 10%);
+  box-shadow: 0 0 0 3px var(--color-primary-ring);
 }
 
 /* ================================================================= tables */
@@ -539,13 +604,13 @@ a:hover {
 }
 
 .btn--secondary {
-  background: var(--color-surface);
-  border-color: var(--color-border-strong);
-  color: var(--color-text);
+  background: var(--color-primary-soft);
+  border-color: transparent;
+  color: var(--color-primary);
 }
 
 .btn--secondary:not(:disabled):hover {
-  background: var(--color-bg);
+  background: #e3e8f7;
 }
 
 .btn--danger {
@@ -574,7 +639,7 @@ a:hover {
 }
 
 .btn--soft:not(:disabled):hover {
-  background: #f9dcdf;
+  background: #e3e8f7;
 }
 
 .btn--sm {
@@ -674,7 +739,7 @@ a:hover {
   padding: 9px 12px;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
-  background: var(--color-surface);
+  background: var(--color-primary-softer);
   font: inherit;
   color: var(--color-text);
 }
@@ -682,7 +747,7 @@ a:hover {
 .field__control:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgb(200 16 46 / 10%);
+  box-shadow: 0 0 0 3px var(--color-primary-ring);
 }
 
 .field__control--invalid {

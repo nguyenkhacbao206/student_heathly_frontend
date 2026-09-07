@@ -18,6 +18,15 @@ export function toDateInputValue(value: string | Date | null | undefined): strin
   return date.toISOString().slice(0, 10)
 }
 
+/**
+ * "yyyy-MM-dd" (giá trị của <input type="date">) -> ISO-8601 đầy đủ.
+ * Prisma chỉ nhận chuỗi RFC3339, gửi "2025-09-01" trần sẽ bị từ chối.
+ */
+export function toIsoDateTime(value: string): string {
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? '' : date.toISOString()
+}
+
 export function formatNumber(value: number | null | undefined, digits = 1): string {
   if (value === null || value === undefined || Number.isNaN(value)) return '—'
   return value.toFixed(digits)

@@ -33,4 +33,12 @@ export const queryKeys = {
   health: {
     all: ['health'] as const,
   },
+  schoolYears: {
+    all: ['school-years'] as const,
+    detail: (id: string) => ['school-years', id] as const,
+  },
+  measurementPeriods: {
+    all: ['measurement-periods'] as const,
+    detail: (id: string) => ['measurement-periods', id] as const,
+  },
 }
