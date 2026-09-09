@@ -858,6 +858,85 @@ a:hover {
   }
 }
 
+.modal--lg {
+  max-width: 860px;
+}
+
+/* ============================================================ import file */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 26px 18px;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-softer);
+  color: var(--color-muted);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.dropzone:hover,
+.dropzone--over {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.dropzone--filled {
+  border-style: solid;
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+  color: var(--color-text);
+}
+
+.dropzone__title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.dropzone__hint {
+  font-size: 0.78rem;
+}
+
+.import-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-softer);
+}
+
+.import-summary__label {
+  display: block;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
+.import-summary__value {
+  font-weight: 600;
+}
+
+.import-preview {
+  max-height: 340px;
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.import-preview .table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--color-primary-softer);
+}
+
 /* ============================================================= auth pages */
 .auth-shell {
   display: grid;

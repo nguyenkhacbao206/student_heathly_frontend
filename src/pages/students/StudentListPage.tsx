@@ -6,6 +6,7 @@ import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { EmptyState, ErrorState, Loading } from '@/components/ui/States'
+import { StudentImportModal } from '@/pages/students/StudentImportModal'
 import { getErrorMessage } from '@/hooks/useApiErrorMessage'
 import { useDeleteStudent, useStudents } from '@/hooks/useStudents'
 import { formatDate } from '@/lib/format'
@@ -17,6 +18,7 @@ export function StudentListPage() {
   const { data, isLoading, error, refetch } = useStudents()
   const deleteStudent = useDeleteStudent()
   const [keyword, setKeyword] = useState('')
+  const [importOpen, setImportOpen] = useState(false)
 
   const students = useMemo(() => {
     const list = data ?? []
@@ -54,7 +56,12 @@ export function StudentListPage() {
         title="Học sinh"
         subtitle={`${data?.length ?? 0} học sinh trong hệ thống`}
         actions={
-          <Button onClick={() => navigate(ROUTES.studentCreate)}>+ Thêm học sinh</Button>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <Button variant="secondary" onClick={() => setImportOpen(true)}>
+              Nhập từ Excel
+            </Button>
+            <Button onClick={() => navigate(ROUTES.studentCreate)}>+ Thêm học sinh</Button>
+          </div>
         }
       />
 
@@ -131,6 +138,8 @@ export function StudentListPage() {
           </div>
         )}
       </Card>
+
+      <StudentImportModal open={importOpen} onClose={() => setImportOpen(false)} />
     </>
   )
 }

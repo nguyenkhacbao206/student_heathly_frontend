@@ -38,6 +38,19 @@ export function useUpdateStudent(id: string) {
   })
 }
 
+export function useImportStudents() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: ({ file, classId }: { file: File; classId: string }) =>
+      studentService.importExcel(file, classId),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: queryKeys.students.all })
+      // Sĩ số của lớp vừa nhập đã đổi -> nạp lại cả danh sách lớp và chi tiết lớp.
+      void client.invalidateQueries({ queryKey: queryKeys.classes.all })
+    },
+  })
+}
+
 export function useDeleteStudent() {
   const client = useQueryClient()
   return useMutation({

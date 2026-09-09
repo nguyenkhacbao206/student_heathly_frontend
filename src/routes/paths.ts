@@ -6,6 +6,7 @@ export const ROUTES = {
   dashboard: '/',
   staff: '/staff',
   parents: '/parents',
+  classes: '/classes',
   students: '/students',
   reports: '/reports',
   campaigns: '/campaigns',

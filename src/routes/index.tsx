@@ -6,6 +6,7 @@ import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { RegisterPage } from '@/pages/auth/RegisterPage'
+import { ClassPage } from '@/pages/classes/ClassPage'
 import { HealthFormPage } from '@/pages/health/HealthFormPage'
 import { HealthListPage } from '@/pages/health/HealthListPage'
 import { MeasurementPeriodPage } from '@/pages/measurement/MeasurementPeriodPage'
@@ -43,7 +44,10 @@ export function AppRoutes() {
             }
           />
 
-          {/* Lớp & Học sinh */}
+          {/* Lớp học */}
+          <Route path="classes" element={<ClassPage />} />
+
+          {/* Học sinh */}
           <Route path="students">
             <Route index element={<StudentListPage />} />
             <Route path="new" element={<StudentFormPage />} />

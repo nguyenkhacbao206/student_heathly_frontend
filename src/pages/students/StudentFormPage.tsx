@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card'
 import { SelectField, TextField } from '@/components/ui/Field'
 import { ErrorState, Loading } from '@/components/ui/States'
 import { getErrorDetails, getErrorMessage } from '@/hooks/useApiErrorMessage'
+import { useClasses } from '@/hooks/useClasses'
 import { useCreateStudent, useStudent, useUpdateStudent } from '@/hooks/useStudents'
 import { toDateInputValue } from '@/lib/format'
 import { ROUTES } from '@/routes/paths'
@@ -22,6 +23,7 @@ const EMPTY_FORM: FormState = {
   dob: '',
   nation: '',
   address: '',
+  classId: '',
 }
 
 const GENDER_OPTIONS = GENDERS.map((gender) => ({
@@ -38,6 +40,7 @@ function validate(form: FormState): Partial<Record<keyof FormState, string>> {
   if (!form.dob) errors.dob = 'Vui lòng chọn ngày sinh'
   else if (new Date(form.dob) > new Date()) errors.dob = 'Ngày sinh không thể ở tương lai'
   if (!form.nation.trim()) errors.nation = 'Vui lòng nhập dân tộc'
+  if (!form.classId) errors.classId = 'Vui lòng chọn lớp'
 
   return errors
 }
@@ -48,6 +51,7 @@ export function StudentFormPage() {
   const navigate = useNavigate()
 
   const studentQuery = useStudent(id)
+  const classes = useClasses()
   const createStudent = useCreateStudent()
   const updateStudent = useUpdateStudent(id ?? '')
   const mutation = isEdit ? updateStudent : createStudent
@@ -66,6 +70,7 @@ export function StudentFormPage() {
       dob: toDateInputValue(student.dob),
       nation: student.nation,
       address: student.address ?? '',
+      classId: student.classId ?? '',
     })
   }, [studentQuery.data])
 
@@ -159,6 +164,20 @@ export function StudentFormPage() {
               value={form.nation}
               onChange={(e) => setField('nation', e.target.value)}
               error={errors.nation}
+              required
+            />
+
+            <SelectField
+              label="Lớp"
+              value={form.classId}
+              onChange={(e) => setField('classId', e.target.value)}
+              options={(classes.data ?? []).map((item) => ({
+                value: item.id,
+                label: `${item.name} — Khối ${item.grade} · ${item.schoolYearName}`,
+              }))}
+              placeholder={classes.isLoading ? 'Đang tải danh sách lớp...' : '-- Chọn lớp --'}
+              error={errors.classId}
+              disabled={classes.isLoading}
               required
             />
 

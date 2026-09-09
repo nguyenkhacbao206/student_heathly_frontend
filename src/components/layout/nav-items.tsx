@@ -40,7 +40,15 @@ export const NAV_ITEMS: NavItem[] = [
   { kind: 'link', to: ROUTES.dashboard, label: 'Tổng quan', icon: <IconHome />, end: true },
   { kind: 'link', to: ROUTES.staff, label: 'Quản lý giáo viên', icon: <IconTeacher /> },
   { kind: 'link', to: ROUTES.parents, label: 'Giám sát phụ huynh', icon: <IconParents /> },
-  { kind: 'link', to: ROUTES.students, label: 'Lớp & Học sinh', icon: <IconStudents /> },
+  {
+    kind: 'group',
+    label: 'Lớp & Học sinh',
+    icon: <IconStudents />,
+    children: [
+      { to: ROUTES.classes, label: 'Lớp học' },
+      { to: ROUTES.students, label: 'Học sinh' },
+    ],
+  },
   { kind: 'link', to: ROUTES.reports, label: 'Báo cáo thống kê', icon: <IconReport /> },
   {
     kind: 'group',

@@ -30,6 +30,12 @@ export const queryKeys = {
     all: ['students'] as const,
     detail: (id: string) => ['students', id] as const,
   },
+  classes: {
+    all: ['classes'] as const,
+    list: (schoolYearId?: string) => ['classes', schoolYearId ?? 'all'] as const,
+    detail: (id: string) => ['classes', 'detail', id] as const,
+    students: (id: string) => ['classes', 'students', id] as const,
+  },
   health: {
     all: ['health'] as const,
   },

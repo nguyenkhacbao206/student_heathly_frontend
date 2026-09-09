@@ -15,6 +15,7 @@ export interface Student {
   dob: string
   nation: string
   address: string | null
+  classId: string
   createdAt: string
   updatedAt: string
 }
@@ -24,8 +25,25 @@ export interface StudentPayload {
   studentCode: string
   name: string
   gender: string
-  /** ISO date string — backend nhận và ép về DateTime */
   dob: string
   nation: string
   address: string
+  classId: string
+}
+
+export interface ImportRowError {
+  row: number
+  studentCode: string
+  message: string
+}
+
+export interface ImportStudentsResult {
+  message: string
+  classId: string
+  className: string
+  total: number
+  created: number
+  skipped: number
+  errors: ImportRowError[]
+  students: Student[]
 }

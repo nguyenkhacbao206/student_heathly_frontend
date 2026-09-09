@@ -6,10 +6,12 @@ interface ModalProps {
   open: boolean
   title: string
   onClose: () => void
+  /** `lg` dùng cho modal có bảng xem trước bên trong. */
+  size?: 'md' | 'lg'
   children: ReactNode
 }
 
-export function Modal({ open, title, onClose, children }: ModalProps) {
+export function Modal({ open, title, onClose, size = 'md', children }: ModalProps) {
   useEffect(() => {
     if (!open) return
     function handleKey(event: KeyboardEvent) {
@@ -25,7 +27,7 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
     <div className="modal-backdrop" onMouseDown={onClose}>
       {/* Chặn nổi bọt để click bên trong modal không đóng modal. */}
       <div
-        className="modal"
+        className={size === 'lg' ? 'modal modal--lg' : 'modal'}
         role="dialog"
         aria-modal="true"
         aria-label={title}
