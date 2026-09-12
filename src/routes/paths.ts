@@ -11,7 +11,9 @@ export const ROUTES = {
   reports: '/reports',
   campaigns: '/campaigns',
   schoolYears: '/school-years',
+  schoolYearCreate: '/school-years/new',
   measurementPeriods: '/measurement-periods',
+  healthIndicators: '/health-indicators',
 
 
   studentCreate: '/students/new',

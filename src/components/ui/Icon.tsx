@@ -176,3 +176,41 @@ export function IconShield({ size = 30, ...rest }: IconProps) {
     </svg>
   )
 }
+
+export function IconBuilding(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M3 21h18" />
+      <rect x="5" y="5" width="8" height="16" rx="1" />
+      <rect x="13" y="11" width="6" height="10" rx="1" />
+      <path d="M8 9h2M8 13h2M8 17h2" />
+    </Base>
+  )
+}
+
+export function IconActivity(props: IconProps) {
+  return (
+    <Base {...props}>
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+    </Base>
+  )
+}
+
+export function IconInfo(props: IconProps) {
+  return (
+    <Base {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 8v1M12 11v5" />
+    </Base>
+  )
+}
+
+export function IconTag(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M12 2H7a2 2 0 0 0-2 2v5l8 8 7-7-8-8Z" />
+      <circle cx="8.5" cy="8.5" r="1" fill="currentColor" stroke="none" />
+    </Base>
+  )
+}
+

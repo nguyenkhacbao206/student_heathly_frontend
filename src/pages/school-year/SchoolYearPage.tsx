@@ -1,67 +1,56 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { PageHeader } from '@/components/layout/PageHeader'
-import { Alert } from '@/components/ui/Alert'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { Card, StatCard } from '@/components/ui/Card'
-import { IconPlus } from '@/components/ui/Icon'
+import { Card } from '@/components/ui/Card'
+import {
+  IconActivity,
+  IconBuilding,
+  IconCalendar,
+  IconPlus,
+  IconStudents,
+} from '@/components/ui/Icon'
 import { SearchInput } from '@/components/ui/SearchInput'
 import { EmptyState, ErrorState, Loading } from '@/components/ui/States'
 import { TableFooter } from '@/components/ui/TableFooter'
 import { getErrorMessage } from '@/hooks/useApiErrorMessage'
 import { usePagination } from '@/hooks/usePagination'
-import {
-  useActivateSchoolYear,
-  useDeleteSchoolYear,
-  useSchoolYears,
-} from '@/hooks/useSchoolYears'
+import { useSchoolYears } from '@/hooks/useSchoolYears'
 import { formatDate } from '@/lib/format'
-import { SchoolYearFormModal } from '@/pages/school-year/SchoolYearFormModal'
-import type { SchoolYear } from '@/types/school-year'
+import { ROUTES } from '@/routes/paths'
+import { getSchoolYearStatus, type SchoolYearStatus } from '@/types/school-year'
 
-const PAGE_SIZE = 10
+/* ─── trạng thái ──────────────────────────────────────────── */
+const STATUS_LABEL: Record<SchoolYearStatus, string> = {
+  active: 'Đang diễn ra',
+  upcoming: 'Đang chuẩn bị',
+  ended: 'Đã kết thúc',
+}
 
+const STATUS_TONE: Record<SchoolYearStatus, 'success' | 'warning' | 'neutral'> = {
+  active: 'success',
+  upcoming: 'warning',
+  ended: 'neutral',
+}
+
+/* ─── component ──────────────────────────────────────────── */
 export function SchoolYearPage() {
+  const navigate = useNavigate()
   const { data, isLoading, error, refetch } = useSchoolYears()
-  const activate = useActivateSchoolYear()
-  const remove = useDeleteSchoolYear()
   const [keyword, setKeyword] = useState('')
-  const [editing, setEditing] = useState<SchoolYear | undefined>()
-  const [modalOpen, setModalOpen] = useState(false)
 
   const years = useMemo(() => data ?? [], [data])
 
   const filtered = useMemo(() => {
     const needle = keyword.trim().toLowerCase()
-    const list = needle ? years.filter((year) => year.name.toLowerCase().includes(needle)) : years
-    // Năm mới nhất lên đầu.
+    const list = needle ? years.filter((y) => y.name.toLowerCase().includes(needle)) : years
     return [...list].sort((a, b) => b.startDate.localeCompare(a.startDate))
   }, [years, keyword])
 
-  const paged = usePagination(filtered, PAGE_SIZE)
-  const activeYear = years.find((year) => year.isActive)
-
-  function openCreate() {
-    setEditing(undefined)
-    setModalOpen(true)
-  }
-
-  function openEdit(year: SchoolYear) {
-    setEditing(year)
-    setModalOpen(true)
-  }
-
-  function handleActivate(year: SchoolYear) {
-    if (year.isActive) return
-    if (!window.confirm(`Đặt "${year.name}" làm năm học đang áp dụng?`)) return
-    activate.mutate(year.id)
-  }
-
-  function handleRemove(year: SchoolYear) {
-    if (!window.confirm(`Xoá năm học "${year.name}"? Thao tác không thể hoàn tác.`)) return
-    remove.mutate(year.id)
-  }
+  const paged = usePagination(filtered)
+  const activeYear = years.find((y) => y.isActive)
 
   if (isLoading) return <Loading />
   if (error) {
@@ -77,46 +66,88 @@ export function SchoolYearPage() {
     )
   }
 
-  const mutationError = activate.error ?? remove.error
-
   return (
     <>
       <PageHeader
         title="Năm học"
-        subtitle="Mỗi thời điểm chỉ có một năm học được đặt là đang áp dụng."
+        subtitle="Quản lý và theo dõi thông tin các năm học trên hệ thống"
+        actions={
+          <Button onClick={() => navigate(ROUTES.schoolYearCreate)}>
+            <IconPlus size={16} />
+            Thiết lập năm học mới
+          </Button>
+        }
       />
 
-      <div className="stat-grid">
-        <StatCard label="Tổng số năm học" value={years.length} />
-        <StatCard label="Năm đang áp dụng" value={activeYear?.name ?? '—'} />
-        <StatCard
-          label="Kết thúc"
-          value={activeYear ? formatDate(activeYear.endDate) : '—'}
-        />
-      </div>
-
-      <div className="toolbar">
-        <SearchInput value={keyword} onChange={setKeyword} placeholder="Tìm theo tên năm học..." />
-        <Button onClick={openCreate}>
-          <IconPlus size={16} />
-          Thêm năm học
-        </Button>
-      </div>
-
-      {mutationError != null && (
-        <div style={{ marginBottom: 16 }}>
-          <Alert message={getErrorMessage(mutationError)} />
+      {/* ── Hero: năm đang diễn ra ── */}
+      {activeYear && (
+        <div style={{ marginBottom: 24 }}>
+          <Card>
+            <div style={{ padding: '20px 24px' }}>
+              <div style={{ marginBottom: 8 }}>
+                <span className="school-year-hero__badge">
+                  <IconActivity size={13} style={{ marginRight: 5, verticalAlign: 'middle' }} />
+                  NĂM HỌC ĐANG DIỄN RA
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                <div>
+                  <h2 style={{ fontSize: 40, fontWeight: 700, margin: '4px 0 8px', letterSpacing: '-0.5px' }}>
+                    {activeYear.name}
+                  </h2>
+                  <span style={{ color: 'var(--color-muted)', fontSize: 14, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                    <IconCalendar size={14} />
+                    {formatDate(activeYear.startDate)} – {formatDate(activeYear.endDate)}
+                  </span>
+                  <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
+                    <div className="school-year-hero__stat">
+                      <span className="school-year-hero__stat-icon" style={{ color: 'var(--color-primary)' }}>
+                        <IconBuilding size={22} />
+                      </span>
+                      <div>
+                        <div style={{ fontSize: 20, fontWeight: 700 }}>{activeYear.classCount ?? 0}</div>
+                        <div style={{ fontSize: 11, color: 'var(--color-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>Lớp học</div>
+                      </div>
+                    </div>
+                    <div className="school-year-hero__stat">
+                      <span className="school-year-hero__stat-icon" style={{ color: 'var(--color-primary)' }}>
+                        <IconStudents size={22} />
+                      </span>
+                      <div>
+                        <div style={{ fontSize: 20, fontWeight: 700 }}>{activeYear.studentCount ?? 0}</div>
+                        <div style={{ fontSize: 11, color: 'var(--color-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>Học sinh</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <Button onClick={() => navigate(`/school-years/${activeYear.id}`)}>
+                  Xem chi tiết →
+                </Button>
+              </div>
+            </div>
+          </Card>
         </div>
       )}
 
+      {/* ── Toolbar ── */}
+      <div style={{ marginBottom: 16 }}>
+        <SearchInput value={keyword} onChange={setKeyword} placeholder="Tìm kiếm năm học" />
+      </div>
+
+      {/* ── Danh sách ── */}
       <Card flush>
+        <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid var(--color-border)' }}>
+          <span style={{ fontWeight: 600, fontSize: 16 }}>Danh sách năm học</span>{' '}
+          <Badge tone="neutral">{filtered.length} niên khoá</Badge>
+        </div>
+
         {paged.items.length === 0 ? (
           <EmptyState
             message={keyword ? 'Không tìm thấy năm học phù hợp.' : 'Chưa có năm học nào.'}
             action={
               !keyword && (
-                <Button size="sm" onClick={openCreate}>
-                  Thêm năm học đầu tiên
+                <Button size="sm" onClick={() => navigate(ROUTES.schoolYearCreate)}>
+                  Thiết lập năm học đầu tiên
                 </Button>
               )
             }
@@ -127,51 +158,46 @@ export function SchoolYearPage() {
               <table className="table">
                 <thead>
                   <tr>
-                    <th className="table__index">STT</th>
-                    <th>Năm học</th>
-                    <th>Bắt đầu</th>
-                    <th>Kết thúc</th>
-                    <th>Trạng thái</th>
-                    <th>Hành động</th>
+                    <th>NĂM HỌC</th>
+                    <th>THỜI GIAN</th>
+                    <th style={{ textAlign: 'center' }}>SỐ LỚP</th>
+                    <th style={{ textAlign: 'center' }}>SỐ HỌC SINH</th>
+                    <th>TRẠNG THÁI</th>
+                    <th>THAO TÁC</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {paged.items.map((year, index) => {
-                    const activating = activate.isPending && activate.variables === year.id
-                    const removing = remove.isPending && remove.variables === year.id
-
+                  {paged.items.map((year) => {
+                    const status = getSchoolYearStatus(year)
                     return (
                       <tr key={year.id}>
-                        <td className="table__index">{paged.from + index}</td>
-                        <td>{year.name}</td>
-                        <td>{formatDate(year.startDate)}</td>
-                        <td>{formatDate(year.endDate)}</td>
                         <td>
-                          <Badge tone={year.isActive ? 'success' : 'neutral'}>
-                            {year.isActive ? 'Đang áp dụng' : 'Không áp dụng'}
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 500 }}>
+                            <IconCalendar size={15} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
+                            {year.name}
+                          </span>
+                        </td>
+                        <td style={{ color: 'var(--color-muted)', fontSize: 14 }}>
+                          {formatDate(year.startDate)} – {formatDate(year.endDate)}
+                        </td>
+                        <td style={{ textAlign: 'center' }}>{year.classCount ?? 0}</td>
+                        <td style={{ textAlign: 'center' }}>{year.studentCount ?? 0}</td>
+                        <td>
+                          <Badge tone={STATUS_TONE[status]}>
+                            {status === 'active' && (
+                              <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: 'currentColor', marginRight: 5 }} />
+                            )}
+                            {STATUS_LABEL[status]}
                           </Badge>
                         </td>
                         <td>
                           <div className="table__actions">
-                            <Button variant="soft" size="sm" onClick={() => openEdit(year)}>
-                              Sửa
-                            </Button>
                             <Button
                               variant="soft"
                               size="sm"
-                              disabled={year.isActive}
-                              loading={activating}
-                              onClick={() => handleActivate(year)}
+                              onClick={() => navigate(`/school-years/${year.id}`)}
                             >
-                              Đặt áp dụng
-                            </Button>
-                            <Button
-                              variant="soft"
-                              size="sm"
-                              loading={removing}
-                              onClick={() => handleRemove(year)}
-                            >
-                              Xoá
+                              Xem chi tiết →
                             </Button>
                           </div>
                         </td>
@@ -189,17 +215,13 @@ export function SchoolYearPage() {
               page={paged.page}
               pageCount={paged.pageCount}
               onPageChange={paged.setPage}
-              unit="năm học"
+              pageSize={paged.pageSize}
+              onPageSizeChange={paged.setPageSize}
+              unit="niên khoá"
             />
           </>
         )}
       </Card>
-
-      <SchoolYearFormModal
-        open={modalOpen}
-        schoolYear={editing}
-        onClose={() => setModalOpen(false)}
-      />
     </>
   )
 }

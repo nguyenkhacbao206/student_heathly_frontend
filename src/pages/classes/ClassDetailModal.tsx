@@ -2,8 +2,10 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { EmptyState, ErrorState, Loading } from '@/components/ui/States'
+import { TableFooter } from '@/components/ui/TableFooter'
 import { getErrorMessage } from '@/hooks/useApiErrorMessage'
 import { useClass, useClassStudents } from '@/hooks/useClasses'
+import { usePagination } from '@/hooks/usePagination'
 import { formatDate } from '@/lib/format'
 import { GENDER_LABELS, type Gender } from '@/types/student'
 
@@ -19,6 +21,7 @@ export function ClassDetailModal({ open, classId, onClose }: ClassDetailModalPro
   const id = open ? classId : undefined
   const detail = useClass(id)
   const students = useClassStudents(id)
+  const paged = usePagination(students.data ?? [])
 
   return (
     <Modal open={open} title={`Lớp ${detail.data?.name ?? ''}`.trim()} size="lg" onClose={onClose}>
@@ -91,32 +94,46 @@ export function ClassDetailModal({ open, classId, onClose }: ClassDetailModalPro
           ) : (students.data?.length ?? 0) === 0 ? (
             <EmptyState message="Lớp chưa có học sinh nào." />
           ) : (
-            <div className="table-wrap">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th className="table__index">STT</th>
-                    <th>Mã học sinh</th>
-                    <th>Họ tên</th>
-                    <th>Giới tính</th>
-                    <th>Ngày sinh</th>
-                    <th>Dân tộc</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {students.data?.map((student, index) => (
-                    <tr key={student.id}>
-                      <td className="table__index">{index + 1}</td>
-                      <td>{student.studentCode}</td>
-                      <td>{student.name}</td>
-                      <td>{GENDER_LABELS[student.gender as Gender] ?? student.gender}</td>
-                      <td>{formatDate(student.dob)}</td>
-                      <td>{student.nation}</td>
+            <>
+              <div className="table-wrap">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th className="table__index">STT</th>
+                      <th>Mã học sinh</th>
+                      <th>Họ tên</th>
+                      <th>Giới tính</th>
+                      <th>Ngày sinh</th>
+                      <th>Dân tộc</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {paged.items.map((student, index) => (
+                      <tr key={student.id}>
+                        <td className="table__index">{paged.from + index}</td>
+                        <td>{student.studentCode}</td>
+                        <td>{student.name}</td>
+                        <td>{GENDER_LABELS[student.gender as Gender] ?? student.gender}</td>
+                        <td>{formatDate(student.dob)}</td>
+                        <td>{student.nation}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <TableFooter
+                from={paged.from}
+                to={paged.to}
+                total={paged.total}
+                page={paged.page}
+                pageCount={paged.pageCount}
+                onPageChange={paged.setPage}
+                pageSize={paged.pageSize}
+                onPageSizeChange={paged.setPageSize}
+                unit="học sinh"
+              />
+            </>
           )}
         </>
       )}

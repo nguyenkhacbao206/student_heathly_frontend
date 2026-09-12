@@ -26,8 +26,6 @@ import {
   type MeasurementStatus,
 } from '@/types/measurement-period'
 
-const PAGE_SIZE = 10
-
 const STATUS_TONES: Record<MeasurementStatus, BadgeTone> = {
   UPCOMING: 'info',
   OPEN: 'success',
@@ -66,7 +64,7 @@ export function MeasurementPeriodPage() {
     return [...list].sort((a, b) => b.startDate.localeCompare(a.startDate) || b.month - a.month)
   }, [periods, keyword, statusFilter, yearFilter])
 
-  const paged = usePagination(filtered, PAGE_SIZE)
+  const paged = usePagination(filtered)
   const openCount = periods.filter((period) => period.status === 'OPEN').length
   const upcomingCount = periods.filter((period) => period.status === 'UPCOMING').length
 
@@ -258,6 +256,8 @@ export function MeasurementPeriodPage() {
               page={paged.page}
               pageCount={paged.pageCount}
               onPageChange={paged.setPage}
+              pageSize={paged.pageSize}
+              onPageSizeChange={paged.setPageSize}
               unit="đợt đo"
             />
           </>

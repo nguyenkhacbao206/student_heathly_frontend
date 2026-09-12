@@ -47,4 +47,10 @@ export const queryKeys = {
     all: ['measurement-periods'] as const,
     detail: (id: string) => ['measurement-periods', id] as const,
   },
+  healthIndicators: {
+    groups: ['health-indicators', 'groups'] as const,
+    dashboard: ['health-indicators', 'dashboard'] as const,
+    all: (params?: object) => ['health-indicators', 'list', params ?? {}] as const,
+    detail: (id: string) => ['health-indicators', id] as const,
+  },
 }

@@ -17,8 +17,6 @@ import { ClassDetailModal } from '@/pages/classes/ClassDetailModal'
 import { ClassFormModal } from '@/pages/classes/ClassFormModal'
 import { GRADES, type ClassItem } from '@/types/class'
 
-const PAGE_SIZE = 10
-
 export function ClassPage() {
   // Lọc theo năm học ngay trên server (GET /class?schoolYearId=...).
   const [yearFilter, setYearFilter] = useState('')
@@ -43,7 +41,7 @@ export function ClassPage() {
     })
   }, [classes, keyword, gradeFilter])
 
-  const paged = usePagination(filtered, PAGE_SIZE)
+  const paged = usePagination(filtered)
   const totalStudents = classes.reduce((sum, item) => sum + item.studentCount, 0)
   const currentYearCount = classes.filter((item) => item.isCurrentYear).length
 
@@ -209,6 +207,8 @@ export function ClassPage() {
               page={paged.page}
               pageCount={paged.pageCount}
               onPageChange={paged.setPage}
+              pageSize={paged.pageSize}
+              onPageSizeChange={paged.setPageSize}
               unit="lớp"
             />
           </>

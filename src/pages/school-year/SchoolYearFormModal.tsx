@@ -15,7 +15,7 @@ interface SchoolYearFormModalProps {
   onClose: () => void
 }
 
-const EMPTY: SchoolYearFormValues = { name: '', startDate: '', endDate: '' }
+const EMPTY: SchoolYearFormValues = { id: '', name: '', startDate: '', endDate: '' }
 
 export function SchoolYearFormModal({ open, schoolYear, onClose }: SchoolYearFormModalProps) {
   const [form, setForm] = useState<SchoolYearFormValues>(EMPTY)
@@ -29,6 +29,7 @@ export function SchoolYearFormModal({ open, schoolYear, onClose }: SchoolYearFor
     setForm(
       schoolYear
         ? {
+          id: schoolYear.id,
           name: schoolYear.name,
           startDate: toDateInputValue(schoolYear.startDate),
           endDate: toDateInputValue(schoolYear.endDate),
@@ -45,8 +46,14 @@ export function SchoolYearFormModal({ open, schoolYear, onClose }: SchoolYearFor
     setForm((current) => ({ ...current, [key]: value }))
   }
 
+
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
+
+    if (!schoolYear && !form.id.trim()) {
+      setLocalError('Vui lòng nhập mã năm học (ID).')
+      return
+    }
 
     if (form.endDate < form.startDate) {
       setLocalError('Ngày kết thúc phải sau ngày bắt đầu.')
@@ -54,8 +61,10 @@ export function SchoolYearFormModal({ open, schoolYear, onClose }: SchoolYearFor
     }
     setLocalError('')
 
+
     const endDate = toIsoDateTime(form.endDate)
     const payload = {
+      ...(schoolYear ? {} : { id: form.id.trim() }),
       name: form.name.trim(),
       startDate: toIsoDateTime(form.startDate),
       enDate: endDate,
@@ -80,12 +89,22 @@ export function SchoolYearFormModal({ open, schoolYear, onClose }: SchoolYearFor
         )}
 
         <div className="form-grid">
+          {!schoolYear && (
+            <TextField
+              label="Mã năm học (ID)"
+              required
+              value={form.id}
+              onChange={(e) => set('id', e.target.value)}
+              placeholder="2025-2026"
+              hint="Mã định danh duy nhất, không thể thay đổi sau khi tạo."
+            />
+          )}
           <TextField
             label="Tên năm học"
             required
             value={form.name}
             onChange={(e) => set('name', e.target.value)}
-            placeholder="2025 - 2026"
+            placeholder="Năm học 2025 - 2026"
             hint="Tên là duy nhất trong hệ thống."
           />
           <TextField

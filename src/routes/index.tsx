@@ -9,8 +9,11 @@ import { RegisterPage } from '@/pages/auth/RegisterPage'
 import { ClassPage } from '@/pages/classes/ClassPage'
 import { HealthFormPage } from '@/pages/health/HealthFormPage'
 import { HealthListPage } from '@/pages/health/HealthListPage'
+import { HealthIndicatorPage } from '@/pages/health-indicators/HealthIndicatorPage'
 import { MeasurementPeriodPage } from '@/pages/measurement/MeasurementPeriodPage'
 import { SchoolYearPage } from '@/pages/school-year/SchoolYearPage'
+import { SchoolYearCreatePage } from '@/pages/school-year/SchoolYearCreatePage'
+import { SchoolYearDetailPage } from '@/pages/school-year/SchoolYearDetailPage'
 import { StaffPage } from '@/pages/staff/StaffPage'
 import { StudentFormPage } from '@/pages/students/StudentFormPage'
 import { StudentListPage } from '@/pages/students/StudentListPage'
@@ -66,12 +69,19 @@ export function AppRoutes() {
           />
 
           {/* Năm học */}
-          <Route path="school-years" element={<SchoolYearPage />} />
+          <Route path="school-years">
+            <Route index element={<SchoolYearPage />} />
+            <Route path="new" element={<SchoolYearCreatePage />} />
+            <Route path=":id" element={<SchoolYearDetailPage />} />
+          </Route>
 
           {/* Đợt đo */}
           <Route path="measurement-periods" element={<MeasurementPeriodPage />} />
 
-          {/* Hồ sơ sức khoẻ */}
+          {/* Chỉ số sức khỏe */}
+          <Route path="health-indicators" element={<HealthIndicatorPage />} />
+
+          {/* Hồ sơ sức khoẻ (giữ nguyên để không break existing) */}
           <Route path="campaigns">
             <Route index element={<HealthListPage />} />
             <Route path="new" element={<HealthFormPage />} />

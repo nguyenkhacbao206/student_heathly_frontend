@@ -11,7 +11,7 @@ interface FieldShellProps {
   required?: boolean
   error?: string
   hint?: string
-  htmlFor: string
+  htmlFor?: string
   children: ReactNode
 }
 
@@ -116,3 +116,5 @@ export function TextAreaField({ label, error, hint, required, ...rest }: TextAre
     </FieldShell>
   )
 }
+
+export { FieldShell as Field }

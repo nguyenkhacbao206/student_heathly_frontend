@@ -21,8 +21,6 @@ import {
   type TeacherRole,
 } from '@/types/teacher'
 
-const PAGE_SIZE = 10
-
 export function StaffPage() {
   const { data, isLoading, error, refetch } = useTeachers()
   const updateStatus = useUpdateTeacherStatus()
@@ -43,7 +41,7 @@ export function StaffPage() {
     )
   }, [teachers, keyword])
 
-  const paged = usePagination(filtered, PAGE_SIZE)
+  const paged = usePagination(filtered)
 
   const activeCount = teachers.filter((teacher) => teacher.status === 'ACTIVE').length
 
@@ -188,6 +186,8 @@ export function StaffPage() {
               page={paged.page}
               pageCount={paged.pageCount}
               onPageChange={paged.setPage}
+              pageSize={paged.pageSize}
+              onPageSizeChange={paged.setPageSize}
               unit="nhân sự"
             />
           </>

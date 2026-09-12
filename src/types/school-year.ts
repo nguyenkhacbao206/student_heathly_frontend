@@ -4,12 +4,25 @@ export interface SchoolYear {
   startDate: string
   endDate: string
   isActive: boolean
-  createdAt: string
-  updatedAt: string
+  classCount?: number
+  studentCount?: number
+  createdAt?: string
+  updatedAt?: string
+}
+
+/** Tính trạng thái năm học dựa theo isActive + ngày */
+export type SchoolYearStatus = 'active' | 'upcoming' | 'ended'
+
+export function getSchoolYearStatus(year: Pick<SchoolYear, 'isActive' | 'startDate' | 'endDate'>): SchoolYearStatus {
+  if (year.isActive) return 'active'
+  const now = Date.now()
+  if (new Date(year.startDate).getTime() > now) return 'upcoming'
+  return 'ended'
 }
 
 
 export interface SchoolYearPayload {
+  id?: string
   name: string
   startDate: string
   enDate: string
@@ -18,6 +31,7 @@ export interface SchoolYearPayload {
 }
 
 export interface SchoolYearFormValues {
+  id: string
   name: string
   startDate: string
   endDate: string

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 
 import {
+  IconActivity,
   IconCalendar,
   IconHome,
   IconParents,
@@ -57,7 +58,7 @@ export const NAV_ITEMS: NavItem[] = [
     children: [
       { to: ROUTES.schoolYears, label: 'Năm học' },
       { to: ROUTES.measurementPeriods, label: 'Đợt đo' },
-      { to: ROUTES.campaigns, label: 'Hồ sơ sức khoẻ' },
+      { to: ROUTES.healthIndicators, label: 'Chỉ số sức khỏe' },
     ],
   },
 ]
