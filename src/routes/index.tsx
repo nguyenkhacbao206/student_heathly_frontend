@@ -11,6 +11,7 @@ import { HealthFormPage } from '@/pages/health/HealthFormPage'
 import { HealthListPage } from '@/pages/health/HealthListPage'
 import { HealthIndicatorPage } from '@/pages/health-indicators/HealthIndicatorPage'
 import { MeasurementPeriodPage } from '@/pages/measurement/MeasurementPeriodPage'
+import { ParentPage } from '@/pages/parents/ParentPage'
 import { SchoolYearPage } from '@/pages/school-year/SchoolYearPage'
 import { SchoolYearCreatePage } from '@/pages/school-year/SchoolYearCreatePage'
 import { SchoolYearDetailPage } from '@/pages/school-year/SchoolYearDetailPage'
@@ -36,16 +37,8 @@ export function AppRoutes() {
           {/* Quản lý giáo viên */}
           <Route path="staff" element={<StaffPage />} />
 
-          {/* Giám sát phụ huynh — chưa có API, để chỗ sẵn */}
-          <Route
-            path="parents"
-            element={
-              <PlaceholderPage
-                title="Giám sát phụ huynh"
-                description="Theo dõi tài khoản phụ huynh và quyền xem hồ sơ sức khoẻ của con."
-              />
-            }
-          />
+          {/* Giám sát phụ huynh */}
+          <Route path="parents" element={<ParentPage />} />
 
           {/* Lớp học */}
           <Route path="classes" element={<ClassPage />} />

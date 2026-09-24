@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 
 import {
-  IconActivity,
   IconCalendar,
   IconHome,
   IconParents,

@@ -16,6 +16,8 @@ export interface Student {
   nation: string
   address: string | null
   classId: string
+  /** null = chưa gắn với tài khoản phụ huynh nào (dùng ở màn Giám sát phụ huynh). */
+  parentId: number | null
   createdAt: string
   updatedAt: string
 }
@@ -30,6 +32,8 @@ export interface StudentPayload {
   address: string
   classId: string
 }
+
+import type { GeneratedParentAccount } from '@/types/parent'
 
 export interface ImportRowError {
   row: number
@@ -46,4 +50,6 @@ export interface ImportStudentsResult {
   skipped: number
   errors: ImportRowError[]
   students: Student[]
+  /** Mỗi học sinh nhập vào được cấp kèm một tài khoản phụ huynh. */
+  parentAccounts: GeneratedParentAccount[]
 }

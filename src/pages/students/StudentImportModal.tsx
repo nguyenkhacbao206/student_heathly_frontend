@@ -262,6 +262,39 @@ export function StudentImportModal({ open, onClose }: StudentImportModalProps) {
               </>
             )}
 
+            {(result.parentAccounts?.length ?? 0) > 0 && (
+              <>
+                <h3 style={{ margin: '20px 0 8px', fontSize: 15 }}>
+                  Tài khoản phụ huynh đã cấp ({result.parentAccounts.length})
+                </h3>
+                <Alert message="Mật khẩu chỉ hiển thị ở màn hình này — hãy gửi cho phụ huynh trước khi đóng." />
+                <div className="import-preview" style={{ marginTop: 8 }}>
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th className="table__index">STT</th>
+                        <th>Học sinh</th>
+                        <th>Email đăng nhập</th>
+                        <th>Mật khẩu</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {result.parentAccounts.slice(0, PREVIEW_LIMIT).map((account, index) => (
+                        <tr key={account.studentId}>
+                          <td className="table__index">{index + 1}</td>
+                          <td>{account.studentName}</td>
+                          <td>{account.email}</td>
+                          <td>
+                            <code style={{ fontSize: 13 }}>{account.defaultPassword}</code>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+
             {result.students.length > 0 && (
               <>
                 <h3 style={{ margin: '20px 0 8px', fontSize: 15 }}>
